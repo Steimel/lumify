@@ -12,6 +12,7 @@ define([
     'use strict';
 
     var propertiesByTitle = ontology.properties.byTitle,
+        propertiesByDependentToCompound = ontology.properties.byDependentToCompound,
         V = {
 
             isPublished: function(vertex) {
@@ -311,11 +312,18 @@ define([
                         }
                         return ontologyProperty && ontologyProperty.userVisible;
                     })
+                    .map(function(a) {
+                        var parentProperty = propertiesByDependentToCompound[a.name];
+                        if (parentProperty) {
+                          return V.prop(vertex, parentProperty, a.key);
+                        }
+                        return V.prop(vertex, a.name, a.key);
+                    })
                     .sort(function(a, b) {
-                        return V.prop(vertex, b.name, b.key).length - V.prop(vertex, a.name, a.key).length;
+                        return b.length - a.length;
                     });
                 if (properties.length > 0) {
-                    return V.prop(vertex, properties[0].name, properties[0].key);
+                    return properties[0];
                 }
             },
 
@@ -409,7 +417,12 @@ define([
                     if (ontologyProperty.displayFormula) {
                         return formula(ontologyProperty.displayFormula, vertex, V, optionalKey);
                     } else {
-                        return value.join(' ');
+                        var dependentIris = ontologyProperty && ontologyProperty.dependentPropertyIris || [];
+                        if (dependentIris.length) {
+                            return _.map(dependentIris, _.partial(V.prop, vertex, _, optionalKey, optionalOpts)).join(' ');
+                        } else {
+                            return value.join(' ');
+                        }
                     }
                 }
 

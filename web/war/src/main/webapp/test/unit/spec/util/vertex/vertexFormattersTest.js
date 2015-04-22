@@ -17,6 +17,9 @@ define(['util/vertex/formatters'], function(f) {
         PROPERTY_NAME_GENDER = 'http://lumify.io/dev#gender',
         PROPERTY_NAME_GEO = 'http://lumify.io/dev#geolocation',
         PROPERTY_NAME_CONCEPT = 'http://lumify.io#conceptType',
+        PROPERTY_NAME_GEO_AND_DATE = 'http://lumify.io/dev#geoLocationAndDate',
+        PROPERTY_NAME_GEO_AND_DATE_GEO = 'http://lumify.io/dev#geoLocationAndDate/geolocation',
+        PROPERTY_NAME_GEO_AND_DATE_DATE = 'http://lumify.io/dev#geoLocationAndDate/date',
         COMPOUND_PROPERTY_NAME = 'http://lumify.io/dev#name',
         COMPOUND_TEST_PROPERTY_NAME = 'http://lumify.io/testing#compound1',
 
@@ -220,6 +223,18 @@ define(['util/vertex/formatters'], function(f) {
                 expect(prop()).to.equal('80.000, -40.000')
                 expect(prop('k1')).to.equal('82.341, -43.233')
             })
+            it('should get display values for geolocation and date', function() {
+              var vertex = vertexFactory([
+                  propertyFactory(PROPERTY_NAME_GEO_AND_DATE_DATE, 'k1', new Date(2015, 03, 01)),
+                  propertyFactory(PROPERTY_NAME_GEO_AND_DATE_GEO, 'k1', {
+                    latitude: 82.3413,
+                    longitude: -43.2326
+                  })
+                ]),
+                prop = _.partial(V.prop, vertex, PROPERTY_NAME_GEO_AND_DATE);
+
+              expect(prop('k1')).to.equal('2015-04-01 82.341, -43.233')
+            })
             it('should get display compound properties', function() {
                 var vertex = vertexFactory([
                         propertyFactory(PROPERTY_NAME_FIRST, 'jason'),
@@ -330,22 +345,22 @@ define(['util/vertex/formatters'], function(f) {
             })
             it('should return longest userVisible property value if no params', function() {
                 var vertex = vertexFactory([
-                        propertyFactory(PROPERTY_NAME_FIRST, 'a'),
-                        propertyFactory(PROPERTY_NAME_LAST, 'aa'),
+                        propertyFactory(PROPERTY_NAME_FIRST, 'k1', 'a'),
+                        propertyFactory(PROPERTY_NAME_LAST, 'k1', 'aa'),
                     ]);
 
-                expect(V.longestProp(vertex)).to.equal('aa')
+                expect(V.longestProp(vertex)).to.equal('aa, a')
             })
             it('should return longest userVisible property value restricted to name', function() {
                 var vertex = vertexFactory([
-                        propertyFactory(PROPERTY_NAME_FIRST, 'a'),
-                        propertyFactory(PROPERTY_NAME_FIRST, 'aa'),
+                        propertyFactory(PROPERTY_NAME_TITLE, 'a'),
+                        propertyFactory(PROPERTY_NAME_TITLE, 'aa'),
                         propertyFactory(PROPERTY_NAME_LAST, 'last longer'),
-                        propertyFactory(PROPERTY_NAME_FIRST, 'aaa'),
-                        propertyFactory(PROPERTY_NAME_FIRST, 'bbb'),
+                        propertyFactory(PROPERTY_NAME_TITLE, 'aaa'),
+                        propertyFactory(PROPERTY_NAME_TITLE, 'bbb'),
                     ]);
 
-                expect(V.longestProp(vertex, PROPERTY_NAME_FIRST)).to.equal('aaa')
+                expect(V.longestProp(vertex, PROPERTY_NAME_TITLE)).to.equal('aaa')
             })
             it('should return undefined if no properties', function() {
                 var vertex = vertexFactory([]);
