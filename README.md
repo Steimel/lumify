@@ -13,17 +13,43 @@ To get started quickly, you can try out a hosted installation of Lumify, or down
 
 ## Quick Start
 
-1. Install Docker per their instructions: [https://docs.docker.com/installation](https://docs.docker.com/installation/#installation)
+1. Install and start Docker per their instructions: [https://docs.docker.com/installation](https://docs.docker.com/installation/#installation).  Only follow the instructions to install & start docker skipping any exercises or other steps beyond installation & starting Docker.
+	- Docker will not run natively on OSX or Windows, however, you can use Boot2Docker, a lightweight Linux Virtual Machine, to
+	  host Docker on these platforms.  After installing Boot2Docker you'll need to initialize and start Boot2Docker with
+	  sufficient memory to run the system.
+	  
+	- Initialize and start boot2docker on OSX/Windows with sufficient memory.  The instructions below illustrate initializing
+	  boot2docker with 4GB of memory, however, this can be increased if more memory is needed.
+
+		```sh
+		boot2docker init -m 4096
+		boot2docker start
+		```
+	- Set the Docker environment variables that are returned from the following Boot2Docker command.  To avoid setting environment variables each time Docker is started, configure these environment variables perminantly for your OS/shell.
+
+		```sh
+		boot2docker shellinit
+		
+		Writing <user home dir>/.boot2docker/certs/boot2docker-vm/ca.pem
+		Writing <user home dir>/.boot2docker/certs/boot2docker-vm/cert.pem
+		Writing <user home dir>/.boot2docker/certs/boot2docker-vm/key.pem
+		export DOCKER_HOST=tcp://192.168.59.103:2376
+		export DOCKER_CERT_PATH=<user home dir>/.boot2docker/certs/boot2docker-vm
+		export DOCKER_CERT_PATH=<user home dir>/.boot2docker/certs/boot2docker-vm
+		```
 
 1. Install node and npm per their instructions: [http://nodejs.org/](http://nodejs.org/)
 
 1. Clone the Lumify repo:
+
     ```sh
     git clone https://github.com/lumifyio/lumify.git
     ```
+    
     **_This will clone the repo to a `lumify` directory in your current working directory.  This absolute path will be referred to as `<cloned_repo_dir>` for the remainder of these steps._**
 
 1. Install the Lumify npm dependencies:
+    
     ```sh
     cd <cloned_repo_dir>/web/war/src/main/webapp
     npm install -g inherits bower grunt
@@ -36,6 +62,7 @@ To get started quickly, you can try out a hosted installation of Lumify, or down
         ```sh
         echo '127.0.0.1 lumify-dev' >> /etc/hosts
         ```
+        
     - OS X
 
         ```sh
@@ -43,12 +70,14 @@ To get started quickly, you can try out a hosted installation of Lumify, or down
         ```
 
 1. Create the docker image:
+    
     ```sh
     cd <cloned_repo_dir>
     docker/build-dev.sh
     ```
 
 1. Run the docker image: (This will start ZooKeeper, HDFS, YARN, ElasticSearch, and RabbitMQ)
+   
     ```sh
     docker/run-dev.sh
     ```
